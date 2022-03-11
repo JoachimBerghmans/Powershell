@@ -57,9 +57,12 @@ Try {
     Invoke-Item "C:\Program Files\HP\Documentation\Doc_uninstall.cmd"
     Write-LogEntry -Value "Successfully removed provisioned package: HP Documentation" -Severity 1
     }
-Catch [System.Exception] {
-        Write-LogEntry -Value  "HP Documentation not installed $($_.Exception.Message)" -Severity 2
+Catch {
+        Write-LogEntry -Value  "Error Remvoving HP Documentation $($_.Exception.Message)" -Severity 3
         }
+}
+Else {
+        Write-LogEntry -Value  "HP Documentation is not installed" -Severity 1
 }
 
 #Remove HP Support Assistant silently
@@ -71,9 +74,12 @@ Try {
         Remove-Item -Path "HKLM:\Software\WOW6432Node\Hewlett-Packard\HPActiveSupport"
         Write-LogEntry -Value  "HP Support Assistant regkey deleted $($_.Exception.Message)" -Severity 1
     }
-Catch [System.Exception] {
-        Write-LogEntry -Value  "HP Support Assistant regkey not found $($_.Exception.Message)" -Severity 2
+Catch {
+        Write-LogEntry -Value  "Error retreiving registry key for HP Support Assistant: $($_.Exception.Message)" -Severity 3
         }
+}
+Else {
+        Write-LogEntry -Value  "HP Support Assistant regkey not found" -Severity 1
 }
 
 if (Test-Path $HPSAuninstall -PathType Leaf) {
@@ -81,9 +87,12 @@ if (Test-Path $HPSAuninstall -PathType Leaf) {
         & $HPSAuninstall /s /v/qn UninstallKeepPreferences=FALSE
         Write-LogEntry -Value "Successfully removed provisioned package: HP Support Assistant silently" -Severity 1
     }
-        Catch [System.Exception] {
-        Write-LogEntry -Value  "HP Support Assistant Uninstaller not found $($_.Exception.Message)" -Severity 2
+        Catch {
+        Write-LogEntry -Value  "Error uninstalling HP Support Assistant: $($_.Exception.Message)" -Severity 3
         }
+}
+Else {
+        Write-LogEntry -Value  "HP Support Assistant Uninstaller not found" -Severity 1
 }
 
 
@@ -93,15 +102,19 @@ $HPCOuninstall = "C:\Program Files (x86)\InstallShield Installation Information\
 
 #copy uninstall file
 xcopy /y .\uninstallHPCO.iss C:\Windows\install\
+Write-LogEntry -Value  "Succesfully copied file uninstallHPCO.iss to C:\Windows\install " -Severity 1
 
 if (Test-Path $HPCOuninstall -PathType Leaf){
 Try {
         & $HPCOuninstall -runfromtemp -l0x0413  -removeonly -s -f1C:\Windows\install\uninstallHPCO.iss
         Write-LogEntry -Value "Successfully removed HP Connection Optimizer" -Severity 1
         }
-Catch [System.Exception] {
-        Write-LogEntry -Value  "HP Connection Optimizer $($_.Exception.Message)" -Severity 2
+Catch {
+        Write-LogEntry -Value  "Error uninstalling HP Connection Optimizer: $($_.Exception.Message)" -Severity 3
         }
+}
+Else {
+        Write-LogEntry -Value  "HP Connection Optimizer not found" -Severity 1
 }
 
 
@@ -178,7 +191,7 @@ ForEach ($ProvPackage in $ProvisionedPackages) {
         $Null = Remove-AppxProvisionedPackage -PackageName $ProvPackage.PackageName -Online -ErrorAction Stop
         Write-LogEntry -Value "Successfully removed provisioned package: [$($ProvPackage.DisplayName)]" -Severity 1
     }
-    Catch [System.Exception] {
+    Catch {
         Write-LogEntry -Value  "Failed to remove provisioned package: [$($ProvPackage.DisplayName)] Error message: $($_.Exception.Message)" -Severity 3
     }
 }
@@ -192,7 +205,7 @@ ForEach ($AppxPackage in $InstalledPackages) {
         $Null = Remove-AppxPackage -Package $AppxPackage.PackageFullName -AllUsers -ErrorAction Stop
         Write-LogEntry -Value "Successfully removed Appx package: [$($AppxPackage.Name)]" -Severity 1
     }
-    Catch [System.Exception] {
+    Catch {
         Write-LogEntry -Value  "Failed to remove Appx package: [$($AppxPackage.Name)] Error message: $($_.Exception.Message)" -Severity 3
     }
 }
@@ -206,7 +219,7 @@ $InstalledPrograms | ForEach-Object {
         $Null = $_ | Uninstall-Package -AllVersions -Force -ErrorAction Stop
         Write-LogEntry -Value "Successfully uninstalled: [$($_.Name)]" -Severity 1
     }
-    Catch [System.Exception] {
+    Catch {
         Write-LogEntry -Value  "Failed to uninstall: [$($_.Name)] Error message: $($_.Exception.Message)" -Severity 3
     }
 }
@@ -216,7 +229,7 @@ Try {
     MsiExec /x "{0E2E04B0-9EDD-11EB-B38C-10604B96B11E}" /qn /norestart
     Write-LogEntry -Value "Fallback to MSI uninistall for HP Wolf Security initiated" -Severity 1
 }
-Catch [System.Exception] {
+Catch {
     Write-LogEntry -Value  "Failed to uninstall HP Wolf Security using MSI - Error message: $($_.Exception.Message)" -Severity 3
 }
 
@@ -225,7 +238,7 @@ Try {
     MsiExec /x "{4DA839F0-72CF-11EC-B247-3863BB3CB5A8}" /qn /norestart
     Write-LogEntry -Value "Fallback to MSI uninistall for HP Wolf 2 Security initiated" -Severity 1
 }
-Catch [System.Exception] {
+Catch {
     Write-LogEntry -Value  "Failed to uninstall HP Wolf Security 2 using MSI - Error message: $($_.Exception.Message)" -Severity 3
 }
 
@@ -241,40 +254,53 @@ if (Test-Path $pathTCO) {
         Remove-Item -LiteralPath $pathTCO -Force -Recurse
         Write-LogEntry -Value "Shortcut for $pathTCO removed" -Severity 1
     }
-        Catch [System.Exception] {
-        Write-LogEntry -Value  "Folder $pathTCO not found $($_.Exception.Message)" -Severity 2
+        Catch {
+        Write-LogEntry -Value  "Error deleting $pathTCO $($_.Exception.Message)" -Severity 3
         }
     }
+Else {
+        Write-LogEntry -Value  "Folder $pathTCO not found" -Severity 1
+}
 
 if (Test-Path $pathTCOc -PathType Leaf) {
     Try {
         Remove-Item -Path $pathTCOc  -Force -Recurse
         Write-LogEntry -Value "Shortcut for $pathTCOc removed" -Severity 1
     }
-        Catch [System.Exception] {
-        Write-LogEntry -Value  "Folder $pathTCOc not found $($_.Exception.Message)" -Severity 2
+        Catch {
+        Write-LogEntry -Value  "Error deleting $pathTCOc $($_.Exception.Message)" -Severity 3
         }
     }
+Else {
+        Write-LogEntry -Value  "File $pathTCOc not found" -Severity 1
+}
 
 if (Test-Path $pathOS) {
     Try {
         Remove-Item -LiteralPath $pathOS  -Force -Recurse
         Write-LogEntry -Value "Shortcut for $pathOS removed" -Severity 1
     }
-        Catch [System.Exception] {
-        Write-LogEntry -Value  "Folder $pathOS not found $($_.Exception.Message)" -Severity 2
+        Catch {
+        Write-LogEntry -Value  "Error deleting $pathOS $($_.Exception.Message)" -Severity 3
         }
     }
+Else {
+        Write-LogEntry -Value  "Folder $pathOS not found" -Severity 1
+}
 
     if (Test-Path $pathFT -PathType Leaf) {
     Try {
         Remove-Item -Path $pathFT -Force -Recurse
         Write-LogEntry -Value "Shortcut for $pathFT removed" -Severity 1
     }
-        Catch [System.Exception] {
-        Write-LogEntry -Value  "Folder $pathFT not found $($_.Exception.Message)" -Severity 2
+        Catch {
+        Write-LogEntry -Value  "Error deleting $pathFT $($_.Exception.Message)" -Severity 3
         }
     }
+Else {
+        Write-LogEntry -Value  "File $pathFT not found" -Severity 1
+}
 
 #Clean up uninstall file for HP Connection Optimizer
 Remove-Item -Path C:\Windows\install\uninstallHPCO.iss -Force
+Write-LogEntry -Value  "Succesfully deleted file C:\Windows\install\uninstallHPCO.iss " -Severity 1
