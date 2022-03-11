@@ -248,7 +248,7 @@ if (Test-Path $pathTCO) {
 
 if (Test-Path $pathTCOc -PathType Leaf) {
     Try {
-        Remove-Item -Path $patchTCOc  -Force -Recurse
+        Remove-Item -Path $pathTCOc  -Force -Recurse
         Write-LogEntry -Value "Shortcut for $pathTCOc removed" -Severity 1
     }
         Catch [System.Exception] {
