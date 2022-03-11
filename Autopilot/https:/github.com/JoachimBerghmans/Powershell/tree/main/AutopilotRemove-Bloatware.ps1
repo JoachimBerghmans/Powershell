@@ -158,23 +158,16 @@ $UninstallPrograms = @(
     "HP Wolf Security"
 )
 
-#$HPidentifier = "AD2F1837"
 
 #Get a list of installed packages matching our list
-$InstalledPackages = Get-AppxPackage -AllUsers | Where-Object {($UninstallPackages -contains $_.Name)} #-or ($_.Name -match "^$HPidentifier")}
+$InstalledPackages = Get-AppxPackage -AllUsers | Where-Object {($UninstallPackages -contains $_.Name)}
 
 #Get a list of Provisioned packages matching our list
-$ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object  {($UninstallPackages -contains $_.DisplayName)} #-or ($_.DisplayName -match "^$HPidentifier")}
+$ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object  {($UninstallPackages -contains $_.DisplayName)}
 
 #Get a list of installed programs matching our list
 $InstalledPrograms = Get-Package | Where-Object  {$UninstallPrograms -contains $_.Name}
 
-
-#Stop-Process -Name BRAxService -force
-#Stop-Process -Name BrConsole -force
-#Stop-Process -Name BrHostHelper -force
-#Stop-Process -Name BRHostSvr -force
-#Stop-Process -Name BRService -force
 
 # Remove provisioned packages first
 ForEach ($ProvPackage in $ProvisionedPackages) {
