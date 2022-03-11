@@ -45,7 +45,7 @@ function Write-LogEntry {
             Out-File -InputObject $LogText -Append -NoClobber -Encoding Default -FilePath $LogFilePath -ErrorAction Stop
         }
         catch [System.Exception] {
-            Write-LogEntry -Message "Unable to append log entry to Remove-HP-Bloatware.log file. Error message at line $($_.InvocationInfo.ScriptLineNumber): $($_.Exception.Message)"
+            Write-Warning -Message "Unable to append log entry to Remove-HP-Bloatware.log file. Error message at line $($_.InvocationInfo.ScriptLineNumber): $($_.Exception.Message)"
         }
     }
 
@@ -58,7 +58,7 @@ Try {
     Write-LogEntry -Value "Successfully removed provisioned package: HP Documentation" -Severity 1
     }
 Catch [System.Exception] {
-        Write-LogEntry -Message "HP Documentation not installed $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "HP Documentation not installed $($_.Exception.Message)" -Severity 2
         }
 }
 
@@ -69,10 +69,10 @@ $HPSAuninstall = "C:\Program Files (x86)\HP\HP Support Framework\UninstallHPSA.e
 if (Test-Path -Path "HKLM:\Software\WOW6432Node\Hewlett-Packard\HPActiveSupport") {
 Try {
         Remove-Item -Path "HKLM:\Software\WOW6432Node\Hewlett-Packard\HPActiveSupport"
-        Write-LogEntry -Message "HP Support Assistant regkey deleted $($_.Exception.Message)" -Severity 1
+        Write-LogEntry -Value  "HP Support Assistant regkey deleted $($_.Exception.Message)" -Severity 1
     }
 Catch [System.Exception] {
-        Write-LogEntry -Message "HP Support Assistant regkey not found $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "HP Support Assistant regkey not found $($_.Exception.Message)" -Severity 2
         }
 }
 
@@ -82,7 +82,7 @@ if (Test-Path $HPSAuninstall -PathType Leaf) {
         Write-LogEntry -Value "Successfully removed provisioned package: HP Support Assistant silently" -Severity 1
     }
         Catch [System.Exception] {
-        Write-LogEntry -Message "HP Support Assistant Uninstaller not found $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "HP Support Assistant Uninstaller not found $($_.Exception.Message)" -Severity 2
         }
 }
 
@@ -100,7 +100,7 @@ Try {
         Write-LogEntry -Value "Successfully removed HP Connection Optimizer" -Severity 1
         }
 Catch [System.Exception] {
-        Write-LogEntry -Message "HP Connection Optimizer $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "HP Connection Optimizer $($_.Exception.Message)" -Severity 2
         }
 }
 
@@ -179,7 +179,7 @@ ForEach ($ProvPackage in $ProvisionedPackages) {
         Write-LogEntry -Value "Successfully removed provisioned package: [$($ProvPackage.DisplayName)]" -Severity 1
     }
     Catch [System.Exception] {
-        Write-LogEntry -Message "Failed to remove provisioned package: [$($ProvPackage.DisplayName)] Error message: $($_.Exception.Message)" -Severity 3
+        Write-LogEntry -Value  "Failed to remove provisioned package: [$($ProvPackage.DisplayName)] Error message: $($_.Exception.Message)" -Severity 3
     }
 }
 
@@ -193,7 +193,7 @@ ForEach ($AppxPackage in $InstalledPackages) {
         Write-LogEntry -Value "Successfully removed Appx package: [$($AppxPackage.Name)]" -Severity 1
     }
     Catch [System.Exception] {
-        Write-LogEntry -Message "Failed to remove Appx package: [$($AppxPackage.Name)] Error message: $($_.Exception.Message)" -Severity 3
+        Write-LogEntry -Value  "Failed to remove Appx package: [$($AppxPackage.Name)] Error message: $($_.Exception.Message)" -Severity 3
     }
 }
 
@@ -207,7 +207,7 @@ $InstalledPrograms | ForEach-Object {
         Write-LogEntry -Value "Successfully uninstalled: [$($_.Name)]" -Severity 1
     }
     Catch [System.Exception] {
-        Write-LogEntry -Message "Failed to uninstall: [$($_.Name)] Error message: $($_.Exception.Message)" -Severity 3
+        Write-LogEntry -Value  "Failed to uninstall: [$($_.Name)] Error message: $($_.Exception.Message)" -Severity 3
     }
 }
 
@@ -217,7 +217,7 @@ Try {
     Write-LogEntry -Value "Fallback to MSI uninistall for HP Wolf Security initiated" -Severity 1
 }
 Catch [System.Exception] {
-    Write-LogEntry -Message "Failed to uninstall HP Wolf Security using MSI - Error message: $($_.Exception.Message)" -Severity 3
+    Write-LogEntry -Value  "Failed to uninstall HP Wolf Security using MSI - Error message: $($_.Exception.Message)" -Severity 3
 }
 
 #Fallback attempt 2 to remove HP Wolf Security using msiexec
@@ -226,7 +226,7 @@ Try {
     Write-LogEntry -Value "Fallback to MSI uninistall for HP Wolf 2 Security initiated" -Severity 1
 }
 Catch [System.Exception] {
-    Write-LogEntry -Message "Failed to uninstall HP Wolf Security 2 using MSI - Error message: $($_.Exception.Message)" -Severity 3
+    Write-LogEntry -Value  "Failed to uninstall HP Wolf Security 2 using MSI - Error message: $($_.Exception.Message)" -Severity 3
 }
 
 
@@ -242,7 +242,7 @@ if (Test-Path $pathTCO) {
         Write-LogEntry -Value "Shortcut for $pathTCO removed" -Severity 1
     }
         Catch [System.Exception] {
-        Write-LogEntry -Message "Folder $pathTCO not found $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "Folder $pathTCO not found $($_.Exception.Message)" -Severity 2
         }
     }
 
@@ -252,7 +252,7 @@ if (Test-Path $pathTCOc -PathType Leaf) {
         Write-LogEntry -Value "Shortcut for $pathTCOc removed" -Severity 1
     }
         Catch [System.Exception] {
-        Write-LogEntry -Message "Folder $pathTCOc not found $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "Folder $pathTCOc not found $($_.Exception.Message)" -Severity 2
         }
     }
 
@@ -262,7 +262,7 @@ if (Test-Path $pathOS) {
         Write-LogEntry -Value "Shortcut for $pathOS removed" -Severity 1
     }
         Catch [System.Exception] {
-        Write-LogEntry -Message "Folder $pathOS not found $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "Folder $pathOS not found $($_.Exception.Message)" -Severity 2
         }
     }
 
@@ -272,7 +272,7 @@ if (Test-Path $pathOS) {
         Write-LogEntry -Value "Shortcut for $pathFT removed" -Severity 1
     }
         Catch [System.Exception] {
-        Write-LogEntry -Message "Folder $pathFT not found $($_.Exception.Message)" -Severity 2
+        Write-LogEntry -Value  "Folder $pathFT not found $($_.Exception.Message)" -Severity 2
         }
     }
 
